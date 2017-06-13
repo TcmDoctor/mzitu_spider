@@ -43,18 +43,19 @@ def img_url_list(url):
     '''
 
     r = requests.get(url)
-    soup = BeautifulSoup(r.text, 'lxml')
-    page_number = soup.select('div.pagenavi a span')[-2].get_text()
-    img_url = soup.select('div.main-image img')[0].get('src')
-    yield img_url
-    with requests.Session() as session:
-        for i in range(2, int(page_number) + 1):
-            page_url = '%s/%s' % (url, i)
-            r = session.get(page_url)
-            if r:
-                soup = BeautifulSoup(r.text, 'lxml')
-                img_url = soup.select('div.main-image img')[0].get('src')
-                yield img_url
+    if r:
+        soup = BeautifulSoup(r.text, 'lxml')
+        page_number = soup.select('div.pagenavi a span')[-2].get_text()
+        img_url = soup.select('div.main-image img')[0].get('src')
+        yield img_url
+        with requests.Session() as session:
+            for i in range(2, int(page_number) + 1):
+                page_url = '%s/%s' % (url, i)
+                r = session.get(page_url)
+                if r:
+                    soup = BeautifulSoup(r.text, 'lxml')
+                    img_url = soup.select('div.main-image img')[0].get('src')
+                    yield img_url
 
 
 def download(info):
