@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
-'''抓取mzitu套图'''
+'''抓取mzitu套图，保存在当前目录的temp目录下'''
 
 import os
 from multiprocessing import Pool
 
-from bs4 import BeautifulSoup
 import myrequests as requests
+from bs4 import BeautifulSoup
 from finished import finished
 
 
-def post_info_list(url, x, y):
-    r'''获取图集名字和url.
+def post_url_list(url, x, y):
+    r'''获取指定页之间所有图集url.
     
     :param  url: str, 主链接.
     :param  x: int, 起始页.
     :param  y: int, 结束页.
-    :return post_name: str, 图集名字.
-            post_url: str, 图集链接.
+    :return post_url: str, 图集链接.
     '''
 
     for i in range(x, y):
@@ -31,33 +30,30 @@ def post_info_list(url, x, y):
             soup = BeautifulSoup(r.text, 'lxml')
             post_tag_list = soup.select('div.postlist li > span > a')
             for post_tag in post_tag_list:
-                post_name = post_tag.get_text()
                 post_url = post_tag.get('href')
-                yield post_url, post_name
+                yield post_url
 
 
-def download(info):
-    r'''下载图片.
+def download(url):
+    r'''以图集名创建文件夹, 下载图集中所有图片.
     
-    :param  info: tuple,
-        info[0]: 图集链接,
-        info[1]: 图集名称.
+    :param  url: 图集链接.
     '''
 
-    url, name = info
     with requests.Session() as session:
         r = session.get(url)
         if r:
-            path = 'temp/%s' % name
+            soup = BeautifulSoup(r.text, 'lxml')
+            post_name = soup.select('h2.main-title')[0].get_text()
+            path = 'temp/%s' % post_name
             if not os.path.exists(path):
                 os.mkdir(path)
-            soup = BeautifulSoup(r.text, 'lxml')
             page_number = soup.select('div.pagenavi a span')[-2].get_text()
             img_url = soup.select('div.main-image img')[0].get('src')
             r = session.get(img_url)
             if r:
                 with open('%s/1.jpg' % path, 'wb') as f:
-                    f.write(r.content)  
+                    f.write(r.content)
 
             for i in range(2, int(page_number) + 1):
                 page_url = '%s/%s' % (url, i)
@@ -76,8 +72,8 @@ def main():
     main_url = 'http://www.mzitu.com'
     if not os.path.exists('temp'):
         os.mkdir('temp')
-    pool = Pool(2)
-    pool.map(download, post_info_list(main_url, 1, 2))
+    with Pool(2) as pool:
+        pool.map(download, post_url_list(main_url, 1, 2))
 
 
 if __name__ == '__main__':
