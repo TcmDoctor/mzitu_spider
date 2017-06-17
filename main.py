@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
-'''抓取mzitu套图，保存在当前目录的temp目录下'''
+r'''抓取mzitu套图，保存在当前目录的temp目录下.'''
 
 import os
 from multiprocessing import Pool
@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from finished import finished
 
 
-def post_url_list(url, x, y):
+def post_url_list(url, x=1, y=2):
     r'''获取指定页之间所有图集url.
     
     :param  url: str, 主链接.
@@ -20,18 +20,19 @@ def post_url_list(url, x, y):
     :return post_url: str, 图集链接.
     '''
 
-    for i in range(x, y):
-        if i == 1:
-            page_url = url
-        else:  
-            page_url = '%s/page/%s' % (url, i)
-        r = requests.get(page_url)
-        if r:
-            soup = BeautifulSoup(r.text, 'lxml')
-            post_tag_list = soup.select('div.postlist li > span > a')
-            for post_tag in post_tag_list:
-                post_url = post_tag.get('href')
-                yield post_url
+    with requests.Session() as session:
+        for i in range(x, y):
+            if i == 1:
+                page_url = url
+            else:  
+                page_url = '%s/page/%s' % (url, i)
+            r = session.get(page_url)
+            if r:
+                soup = BeautifulSoup(r.text, 'lxml')
+                post_tag_list = soup.select('div.postlist li > span > a')
+                for post_tag in post_tag_list:
+                    post_url = post_tag.get('href')
+                    yield post_url
 
 
 def download(url):
@@ -72,8 +73,8 @@ def main():
     main_url = 'http://www.mzitu.com'
     if not os.path.exists('temp'):
         os.mkdir('temp')
-    with Pool(2) as pool:
-        pool.map(download, post_url_list(main_url, 1, 2))
+    with Pool(2) as p:
+        p.map(download, post_url_list(main_url))
 
 
 if __name__ == '__main__':
