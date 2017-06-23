@@ -13,7 +13,7 @@ from finished import finished
 
 def post_url_list(url, x=1, y=2):
     r'''获取指定页之间所有图集url.
-    
+
     :param  url: str, 主链接.
     :param  x: int, 起始页.
     :param  y: int, 结束页.
@@ -24,7 +24,7 @@ def post_url_list(url, x=1, y=2):
         for i in range(x, y):
             if i == 1:
                 page_url = url
-            else:  
+            else:
                 page_url = '%s/page/%s' % (url, i)
             r = session.get(page_url)
             if r:
@@ -37,8 +37,8 @@ def post_url_list(url, x=1, y=2):
 
 def download(url):
     r'''以图集名创建文件夹, 下载图集中所有图片.
-    
-    :param  url: 图集链接.
+
+    :param  url: str, 图集链接.
     '''
 
     with requests.Session() as session:
@@ -73,8 +73,8 @@ def main():
     main_url = 'http://www.mzitu.com'
     if not os.path.exists('temp'):
         os.mkdir('temp')
-    with Pool(2) as p:
-        p.map(download, post_url_list(main_url))
+    with Pool(2) as pool:
+        pool.map(download, post_url_list(main_url))
 
 
 if __name__ == '__main__':
