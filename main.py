@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
-r'''抓取指定页之间所有mzitu套图，保存在当前目录的temp目录下.
+'''抓取指定页之间所有mzitu套图，保存在当前目录的temp目录下.'''
 
-'''
-
+import re
 import os
 from multiprocessing import Pool
 
@@ -14,7 +13,7 @@ from finished import finished
 
 
 def post_url_list(url, x=1, y=2):
-    r'''获取指定页之间所有图集的url.
+    '''获取指定页之间所有图集的url.
 
     :param  url: str, 主链接.
     :param  x: int, 起始页.
@@ -39,7 +38,7 @@ def post_url_list(url, x=1, y=2):
 
 
 def download(url):
-    r'''以图集名创建文件夹, 下载图集中所有图片.
+    '''以图集名创建文件夹, 下载图集中所有图片.
 
     :param  url: str, 图集链接.
     '''
@@ -49,6 +48,7 @@ def download(url):
         if r:
             soup = BeautifulSoup(r.text, 'lxml')
             post_name = soup.select('h2.main-title')[0].get_text()
+            post_name = re.sub(r'[\\/:*?"<>|]', '', post_name)
             path = 'temp/%s' % post_name
             if not os.path.exists(path):
                 os.mkdir(path)
@@ -73,8 +73,6 @@ def download(url):
 
 @finished
 def main():
-    '''主函数.'''
-
     main_url = 'http://www.mzitu.com'
     if not os.path.exists('temp'):
         os.mkdir('temp')
