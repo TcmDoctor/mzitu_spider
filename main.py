@@ -35,7 +35,7 @@ def post_url_list(url, x=1, y=2):
                 for post_tag in post_tag_list:
                     post_url = post_tag.get('href')
                     yield post_url
-
+                    
 
 def download(url):
     '''以图集名创建文件夹, 下载图集中所有图片.
@@ -52,14 +52,14 @@ def download(url):
             path = 'temp/%s' % post_name
             if not os.path.exists(path):
                 os.mkdir(path)
-            page_number = soup.select('div.pagenavi a span')[-2].get_text()
+            page_number = int(soup.select('div.pagenavi a span')[-2].get_text())
             img_url = soup.select('div.main-image img')[0].get('src')
             r = session.get(img_url)
             if r:
                 with open('%s/1.jpg' % path, 'wb') as f:
                     f.write(r.content)
 
-            for i in range(2, int(page_number) + 1):
+            for i in range(2, page_number + 1):
                 page_url = '%s/%s' % (url, i)
                 r = session.get(page_url)
                 if r:
