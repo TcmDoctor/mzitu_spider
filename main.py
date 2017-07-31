@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
-'''抓取指定页之间所有mzitu套图，保存在当前目录的temp目录下.'''
+'''抓取mzitu指定页之间所有套图，保存在当前目录的temp目录下.'''
 
 import re
 import os
@@ -44,6 +44,7 @@ def download(url):
     '''
 
     with requests.Session() as session:
+        session.headers['referer'] = 'http://www.mzitu.com'
         r = session.get(url)
         if r:
             soup = BeautifulSoup(r.text, 'lxml')
