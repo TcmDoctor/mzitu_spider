@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
-'''抓取mzitu指定页之间所有套图，保存在当前目录的temp目录下.'''
+r'''抓取mzitu指定页之间所有套图，保存在当前目录的temp目录下.'''
 
 import re
 import os
@@ -13,7 +13,7 @@ from finished import finished
 
 
 def post_url_list(x=1, y=2):
-    '''获取指定页之间所有图集的url.
+    r'''获取指定页之间所有图集的url.
 
     :param x: int, 起始页.
 
@@ -39,7 +39,7 @@ def post_url_list(x=1, y=2):
                     
 
 def download(url):
-    '''以图集名创建文件夹, 下载图集中所有图片.
+    r'''以图集名创建文件夹, 下载图集中所有图片.
 
     :param  url: str, 图集链接.
     '''
