@@ -12,16 +12,17 @@ from bs4 import BeautifulSoup
 from finished import finished
 
 
-def post_url_list(url, x=1, y=2):
+def post_url_list(x=1, y=2):
     '''获取指定页之间所有图集的url.
 
-    :param  url: str, 主链接.
-    :param  x: int, 起始页.
-    :param  y: int, 结束页.
+    :param x: int, 起始页.
+
+    :param y: int, 结束页.
 
     :return post_url: str, 图集链接.
     '''
 
+    url = 'http://www.mzitu.com'
     with requests.Session() as session:
         for i in range(x, y):
             if i == 1:
@@ -43,13 +44,16 @@ def download(url):
     :param  url: str, 图集链接.
     '''
 
+    pattern = re.compile(r'[\\/:*?"<>|]')
+
     with requests.Session() as session:
         session.headers['referer'] = 'http://www.mzitu.com'
         r = session.get(url)
         if r:
             soup = BeautifulSoup(r.text, 'lxml')
             post_name = soup.select('h2.main-title')[0].get_text()
-            post_name = re.sub(r'[\\/:*?"<>|]', '', post_name)
+            # 剔除不符合文件夹命名规则的字符
+            post_name = pattern.sub('', post_name)
             path = 'temp/%s' % post_name
             if not os.path.exists(path):
                 os.mkdir(path)
@@ -74,11 +78,10 @@ def download(url):
 
 @finished
 def main():
-    main_url = 'http://www.mzitu.com'
     if not os.path.exists('temp'):
         os.mkdir('temp')
     with Pool(2) as pool:
-        pool.map(download, post_url_list(main_url))
+        pool.map(download, post_url_list())
 
 
 if __name__ == '__main__':
