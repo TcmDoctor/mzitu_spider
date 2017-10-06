@@ -81,7 +81,7 @@ def main():
     if not os.path.exists('temp'):
         os.mkdir('temp')
     with Pool(2) as pool:
-        pool.map(download, post_url_list())
+        pool.map(download, post_url_list(x=1, y=2))
 
 
 if __name__ == '__main__':
