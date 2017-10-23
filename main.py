@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from finished import finished
 
 
-def post_url_list(x=1, y=3):
+def post_url_list(x=1, y=2):
     r'''获取指定页之间所有图集的url.
 
     :param x: int, 起始页.
@@ -28,7 +28,7 @@ def post_url_list(x=1, y=3):
             if i == 1:
                 page_url = url
             else:
-                page_url = '%s/page/%s' % (url, i)
+                page_url = '%s/page/%d/' % (url, i)
             r = session.get(page_url)
             if r:
                 soup = BeautifulSoup(r.text, 'lxml')
