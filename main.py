@@ -28,7 +28,7 @@ def post_url_list(x=1, y=2):
             if i == 1:
                 page_url = url
             else:
-                page_url = '%s/page/%s' % (url, i)
+                page_url = '%s/page/%s/' % (url, i)
             r = session.get(page_url)
             if r:
                 soup = BeautifulSoup(r.text, 'lxml')
@@ -44,7 +44,7 @@ def download(url):
     :param  url: str, 图集链接.
     '''
 
-    pattern = re.compile(r'[\\/:*?"<>|]')
+    pattern = re.compile(r'[\\/:*?"<>|] ')
 
     with requests.Session() as session:
         session.headers['referer'] = 'http://www.mzitu.com'
