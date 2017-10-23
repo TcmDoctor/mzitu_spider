@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from finished import finished
 
 
-def post_url_list(x=1, y=2):
+def post_url_list(x=1, y=3):
     r'''获取指定页之间所有图集的url.
 
     :param x: int, 起始页.
@@ -34,8 +34,7 @@ def post_url_list(x=1, y=2):
                 soup = BeautifulSoup(r.text, 'lxml')
                 post_tag_list = soup.select('div.postlist li > span > a')
                 for post_tag in post_tag_list:
-                    post_url = post_tag.get('href')
-                    yield post_url
+                    yield post_tag.get('href')
                     
 
 def download(url):
@@ -44,7 +43,7 @@ def download(url):
     :param  url: str, 图集链接.
     '''
 
-    pattern = re.compile(r'[\\/:*?"<>|]')
+    pattern = re.compile(r'[\\/:*?"<>| ]')
 
     with requests.Session() as session:
         session.headers['referer'] = 'http://www.mzitu.com'
@@ -57,23 +56,17 @@ def download(url):
             path = 'temp/%s' % post_name
             if not os.path.exists(path):
                 os.mkdir(path)
-            page_number = int(soup.select('div.pagenavi a span')[-2].get_text())
-            img_url = soup.select('div.main-image img')[0].get('src')
-            r = session.get(img_url)
-            if r:
-                with open('%s/1.jpg' % path, 'wb') as f:
-                    f.write(r.content)
+            # 获取图片数量
+            img_num = int(soup.select('div.pagenavi a span')[-2].get_text())
+            # 图片url的模板
+            temp_url = soup.select('div.main-image img')[0].get('src')[:-6]
 
-            for i in range(2, page_number + 1):
-                page_url = '%s/%s' % (url, i)
-                r = session.get(page_url)
+            for i in range(1, img_num + 1):
+                img_url = '%s%02d.jpg' % (temp_url, i)
+                r = session.get(img_url)
                 if r:
-                    soup = BeautifulSoup(r.text, 'lxml')
-                    img_url = soup.select('div.main-image img')[0].get('src')
-                    r = session.get(img_url)
-                    if r:
-                        with open('%s/%s.jpg' % (path, i), 'wb') as f:
-                            f.write(r.content)
+                    with open('%s/%02d.jpg' % (path, i), 'wb') as f:
+                        f.write(r.content)
 
 
 @finished
