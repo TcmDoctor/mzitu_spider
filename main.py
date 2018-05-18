@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
-"""抓取mzitu指定页之间所有套图，保存在当前目录的temp目录下."""
+"""抓取mzitu指定页之间所有套图, 保存在当前目录的temp目录下."""
 
 import re
 import os
@@ -61,7 +61,7 @@ def download(url):
             # 图片url的模板
             temp_url = soup.select('div.main-image img')[0].get('src')[:-6]
 
-            for i in range(1, img_num + 1):
+            for i in range(1, img_num+1):
                 img_url = '%s%02d.jpg' % (temp_url, i)
                 r = session.get(img_url)
                 if r:
@@ -73,7 +73,7 @@ def download(url):
 def main():
     if not os.path.exists('temp'):
         os.mkdir('temp')
-    with Pool(2) as pool:
+    with Pool(8) as pool:
         pool.map(download, post_url_list(x=1, y=2))
 
 
